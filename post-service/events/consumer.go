@@ -13,8 +13,8 @@ type KafkaConsumer struct {
 	kafkaReader *kafka.Reader
 	log         logger.Logger
 }
-type KafkaConsumera interface{
-	Consume(ctx context.Context,topic string)
+type KafkaConsumera interface {
+	Consume(ctx context.Context, topic string)
 }
 
 // func NewKafkaConsumer(ctx context.Context, conf config.Config, log logger.Logger, topic string)  {
@@ -44,7 +44,7 @@ type KafkaConsumera interface{
 // 	return nil
 // }
 
-func (p *KafkaConsumer)Consume(ctx context.Context,topic string) {
+func (p *KafkaConsumer) Consume(ctx context.Context, topic string) {
 	// initialize a new reader with the brokers and topic
 	// the groupID identifies the consumer and prevents
 	// it from receiving duplicate messages
@@ -53,7 +53,6 @@ func (p *KafkaConsumer)Consume(ctx context.Context,topic string) {
 
 		Brokers: []string{connString},
 		Topic:   topic,
-		
 	})
 	for {
 		// the `ReadMessage` method blocks until we receive the next event

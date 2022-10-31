@@ -2,7 +2,9 @@ package service
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"time"
 
 	//"reflect"
 
@@ -13,6 +15,7 @@ import (
 	pb "github.com/Hatsker01/Kafka/user-service/genproto"
 	l "github.com/Hatsker01/Kafka/user-service/pkg/logger"
 	"github.com/Hatsker01/Kafka/user-service/pkg/messagebroker"
+	"github.com/Hatsker01/Kafka/user-service/pkg/structs"
 	cl "github.com/Hatsker01/Kafka/user-service/service/grpc_client"
 	"github.com/Hatsker01/Kafka/user-service/storage"
 	"github.com/gofrs/uuid"
@@ -45,7 +48,7 @@ func NewUserService(db *sqlx.DB, log l.Logger, client cl.GrpcClientI, publisher 
 
 func (s *UserService) publisherUserMessage(user []byte) error {
 
-	err := s.publisher["user"].Publish([]byte("user"), user, string(user))
+	err := s.publisher["userinfo"].Publish([]byte("userinfo.create"), user, string(user))
 	if err != nil {
 		return err
 	}
@@ -86,7 +89,18 @@ func (s *UserService) CreateUser(ctx context.Context, req *pb.User) (*pb.User, e
 	}
 	fmt.Println(user)
 
-	err = s.publisherUserMessage(p)
+	// err = s.publisherUserMessage(p)
+	var userinfo structs.UserInfo
+
+	userinfo.Barber_id = "e7289d62-83b8-4c66-93bd-4bdc4cd02b4a"
+	userinfo.User_id = "e7289d62-83b8-4c66-93bd-4bdc4cd02b4a"
+	userinfo.Created_at = time.Now()
+	userinfo.Date = time.Now().String()
+	userinfo.Start_time = time.Now()
+	userinfo.Finish_time = time.Now().Add(time.Minute * 10)
+	info,_ := json.Marshal(userinfo)
+	err = s.publisherUserMessage(info)
+	
 	if err != nil {
 		s.logger.Error("failed while publishing user info", l.Error(err))
 		return nil, status.Error(codes.Internal, "failed while publishing user info")

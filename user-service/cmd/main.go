@@ -39,7 +39,7 @@ func main() {
 	//Kafka
 	publisherMap := make(map[string]messagebroker.Publisher)
 
-	userTopicPublisher := events.NewKafkaProducerBroker(cfg,log,"user.user")
+	userTopicPublisher := events.NewKafkaProducerBroker(cfg,log,"userinfo.create")
 	defer func(){
 		err:=userTopicPublisher.Stop()
 		if err!=nil{
@@ -47,7 +47,7 @@ func main() {
 		}
 	}()
 
-	publisherMap["user"] = userTopicPublisher
+	publisherMap["userinfo"] = userTopicPublisher
 	//Kafka End
 
 	userService := service.NewUserService(connDB, log, grpcC,publisherMap)
